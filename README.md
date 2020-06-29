@@ -4,7 +4,7 @@
 [![nuget](https://img.shields.io/nuget/v/Reference.GitHubActions.svg)](https://www.nuget.org/packages/Reference.GitHubActions/)
 [![nuget downloads](https://img.shields.io/nuget/dt/Reference.GitHubActions.svg)](https://www.nuget.org/packages/Reference.GitHubActions/)
 [![github last commit](https://img.shields.io/github/last-commit/michael-wolfenden/Reference.GitHubActions.svg)](https://github.com/michael-wolfenden/Reference.GitHubActions)
-[![github license](https://img.shields.io/github/license/michael-wolfenden/Reference.GitHubActions.svg)](https://github.com/michael-wolfenden/Reference.GitHubActions/blob/master/LICENSE)
+[![github license](https://img.shields.io/github/license/michael-wolfenden/Reference.GitHubActions.svg)](https://github.com/michael-wolfenden/Reference.GitHubActions/blob/master/LICENSE.md)
 [![Code of Conduct](https://img.shields.io/badge/code%20of-conduct-ff69b4.svg)](https://github.com/michael-wolfenden/Reference.GitHubActions/blob/master/CODE_OF_CONDUCT.md)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![dependabot](https://img.shields.io/badge/Dependabot-enabled-green.svg?logo=dependabot&style=flat)](https://dependabot.com/)
