@@ -1,0 +1,150 @@
+# ========================================================================
+# Perform linux, macos and windows builds in parallel and then trigger a release build on success
+#
+# NOTE: you must have the following variables set in your workflow as secret variables
+# NUGET_API_KEY
+# ========================================================================
+name: CI
+
+# Triggers the workflow on push or pull request, but only for the master branch
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  # ===========================================================================================
+  # GetNextVersionNumber
+  # ===========================================================================================
+  # Run semantic-release in dry run mode, extract the next release version number and set the
+  # nextVersionNumber variable for the following jobs to use.
+
+  # NOTE: if semantic-release doesn't detect any changes requiring a release, the version will
+  # be set to 0.0.0
+  # ===========================================================================================
+  get_next_version_number_job:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-latest
+    outputs:
+      next_version_number: ${{ steps.get_next_version_number_step.outputs.next_version_number }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Run semantic release to get next version number
+        id: get_next_version_number_step
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+
+          semanticReleaseOutput=$(npx \
+              --quiet \
+              -p semantic-release@17.0.8 \
+              -p @semantic-release/changelog@5.0.1 \
+              -p @semantic-release/git@9.0.0 \
+              -p @semantic-release/exec@5.0.0 \
+              semantic-release --dry-run)
+
+          nextVersion=$(echo "$semanticReleaseOutput" \
+            | sed -n 's/.* The next release version is \(.*\)$/\1/gip')
+
+          echo "$semanticReleaseOutput"
+
+          if [ -z "$nextVersion" ]
+          then
+            echo "::set-output name=next_version_number::0.0.0"
+          else
+            echo "The next release version is ${nextVersion}"
+            echo "::set-output name=next_version_number::$nextVersion"
+          fi
+
+  # ===========================================================================================
+  # Build
+  # ===========================================================================================
+  # Run the linux, macOS and windows builds
+  # ===========================================================================================
+  build_job:
+    runs-on: ${{ matrix.os }}
+    needs: get_next_version_number_job
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # Install .NET Core 3.1.x
+      - name: Install dotnet sdk 3.1.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+
+      # Build and run tests via Cake.
+      # The produced nuget package and test results will be output to the artifacts folder
+      - name: 'Cake Build & Test'
+        shell: bash
+        env:
+          # Don’t send any telemetry data.
+          DOTNET_CLI_TELEMETRY_OPTOUT: true
+          # This will prevent the CLI from pre-populating the packages cache.
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+        run: |
+          dotnet tool restore
+          dotnet cake --versionNumber=${{needs.get_next_version_number_job.outputs.next_version_number}}
+
+      - name: 'Publish artifacts'
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.os }}-artifacts
+          path: artifacts/
+
+  # ===========================================================================================
+  # Release
+  # ===========================================================================================
+  # Run semantic-release to trigger a release (Publish to nuget, create a release on github,
+  # update the CHANGELOG) BUT only if semantic-release detects any changes since the last release
+  # ===========================================================================================
+  release_job:
+    runs-on: ubuntu-latest
+    needs: build_job
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # Download the stored nuget and symbol package
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ubuntu-latest-artifacts
+          path: ./
+
+      # Run semantic-release to trigger a release
+      - name: Run semantic release to release if relevant changes
+        id: get_next_version_number_step
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+
+          npx --quiet \
+            -p semantic-release@17.0.8 \
+            -p @semantic-release/changelog@5.0.1 \
+            -p @semantic-release/git@9.0.0 \
+            -p @semantic-release/exec@5.0.0 \
+            semantic-release
