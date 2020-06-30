@@ -77,6 +77,7 @@ namespace Reference.GitHubActions
             "Mara Jade",
             "Mas Amedda",
             "Mission Vao",
+            "Moff Gideon",
             "Natasi Daala",
             "Nom Anor",
             "Obi-Wan Kenobi",
