@@ -19,14 +19,15 @@ To serve as a reference for building a NET Standard library with a [CI/CD](https
 
 ### Features
 
-- [x] Automatic Versioning, [Publishing](https://github.com/michael-wolfenden/Reference.GitHubActions/releases) and [Changelog](https://github.com/michael-wolfenden/Reference.GitHubActions/blob/master/CHANGELOG.md) generation using [semantic-release](https://github.com/semantic-release/semantic-release)
+- [x] Automatic Versioning, [Publishing](https://github.com/michael-wolfenden/Reference.GitHubActions/releases) and [Changelog](CHANGELOG.md) generation using [semantic-release](https://github.com/semantic-release/semantic-release)
 - [x] [Strong Naming](https://docs.microsoft.com/en-us/dotnet/standard/library-guidance/strong-naming#create-strong-named-net-libraries)
 - [x] [SourceLink](https://github.com/dotnet/sourcelink/) support
 - [x] Performs Windows, Linux and macOS builds using [GitHub Actions](https://github.com/features/actions) and [Cake](https://cakebuild.net/)
 - [x] Testing via [xUnit.net](https://xunit.github.io/)
 - [x] [Nullable reference types](https://docs.microsoft.com/en-us/dotnet/csharp/nullable-references) support
-- [x] [EditorConfig](https://docs.microsoft.com/en-us/visualstudio/ide/create-portable-custom-editor-options) support
-- [x] Follows Microsoft's  [open-source library guidance](https://docs.microsoft.com/en-us/dotnet/standard/library-guidance/)
+- [x] [EditorConfig](https://docs.microsoft.com/en-us/visualstudio/ide/create-portable-custom-editor-options) support via [.editorconfig](.editorconfig)
+- [X] [Dependabot](https://dependabot.com/) support via [dependabot.yml](.github/dependabot.yml)
+- [x] Follows Microsoft's [open-source library guidance](https://docs.microsoft.com/en-us/dotnet/standard/library-guidance/)
 
 ## Access tokens
 
