@@ -46,7 +46,7 @@ jobs:
 
           semanticReleaseOutput=$(npx \
               --quiet \
-              -p semantic-release@17.0.8 \
+              -p semantic-release@17.3.7 \
               -p @semantic-release/changelog@5.0.1 \
               -p @semantic-release/git@9.0.0 \
               -p @semantic-release/exec@5.0.0 \
@@ -143,7 +143,7 @@ jobs:
           set -Eeuo pipefail
 
           npx --quiet \
-            -p semantic-release@17.0.8 \
+            -p semantic-release@17.3.7 \
             -p @semantic-release/changelog@5.0.1 \
             -p @semantic-release/git@9.0.0 \
             -p @semantic-release/exec@5.0.0 \
